@@ -4,7 +4,7 @@ title:      "足球训练计划"
 subtitle:   "周日比赛日"
 date:       2024-11-10
 author:     "Phoenix"
-header-img: "img/post-bg-os-metro.jpg"
+header-img: "img/post-bg-football_training.jpg"
 catalog: true
 tags:
   - 足球
