@@ -4,7 +4,7 @@ title:      "BoWenHUANG Photos"
 subtitle:   "Gallery"
 date:       2024-11-10
 author:     "Phoenix"
-header-img: "img/post-bg-football_training.jpg"
+header-img: "https://mir-s3-cdn-cf.behance.net/project_modules/fs/801fcc109927063.5fdf702077214.jpg"
 catalog: true
 tags:
   - Photo
@@ -32,7 +32,7 @@ tags:
 ![](https://mir-s3-cdn-cf.behance.net/project_modules/1400/fc17b976401277.5c68c03e3e9ec.jpg)
 
 #### 黄绿
->雾气，秋天，阴天
+雾气，秋天，阴天
 
 ![](https://mir-s3-cdn-cf.behance.net/project_modules/disp/af6d1879505905.5cc55bc899505.jpg)
 ![](https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/d0f86779505905.5cc55bc96368c.jpg)
