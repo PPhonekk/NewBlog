@@ -78,47 +78,23 @@ layout: default
         const container = document.querySelector('.post-container');
         if (!container) return;
 
-        const images = container.querySelectorAll('img');
-        const promises = [];
+        const containerImages = container.querySelectorAll('img');
+        const promises = Array.from(containerImages).map((img) => {
+            return waitForImageLoad(img).then(() => {
+                const src = img.getAttribute('src');
+                const wrapper = document.createElement('a');
+                wrapper.setAttribute('href', src);
+                wrapper.setAttribute('class', 'pswp-item grid-item');
+                wrapper.setAttribute('target', '_blank');
+                wrapper.setAttribute('data-pswp-width', img.naturalWidth || 1920);
+                wrapper.setAttribute('data-pswp-height', img.naturalHeight || 1080);
 
-        images.forEach((img) => {
-            const src = img.getAttribute('src'); // 获取图片路径
-            const alt = img.getAttribute('alt') || ''; // 获取描述
-            const wrapper = document.createElement('a'); // 创建 <a> 标签
-
-            // 设置 <a> 属性
-            wrapper.setAttribute('href', src);
-            wrapper.setAttribute('class', 'pswp-item grid-item');
-            wrapper.setAttribute('target', '_blank'); // 新窗口打开链接
-
-            // 动态加载图片尺寸
-            const image = new Image();
-            const promise = new Promise((resolve) => {
-                image.onload = () => {
-                    wrapper.setAttribute('data-pswp-width', image.naturalWidth);
-                    wrapper.setAttribute('data-pswp-height', image.naturalHeight);
-                    resolve(); // 图片加载完成
-                };
-
-                image.onerror = () => {
-                    // 设置默认尺寸
-                    wrapper.setAttribute('data-pswp-width', '1920');
-                    wrapper.setAttribute('data-pswp-height', '1080');
-                    resolve(); // 即使加载失败也标记完成
-                };
-
-                image.src = src;
+                const newImg = img.cloneNode(true);
+                wrapper.appendChild(newImg);
+                img.replaceWith(wrapper);
             });
-
-            promises.push(promise);
-
-            // 保留原始 img 属性
-            const newImg = img.cloneNode(true);
-            wrapper.appendChild(newImg);
-            img.replaceWith(wrapper);
         });
 
-        // 等待所有图片加载完成后初始化 PhotoSwipe
         Promise.all(promises).then(() => {
             const lightbox = new PhotoSwipeLightbox({
                 gallery: '.post-container',
@@ -126,93 +102,67 @@ layout: default
                 pswpModule: PhotoSwipe,
             });
             lightbox.init();
-            //把转换后的放入div中
+
             const paragraphs = document.querySelectorAll('p');
-
             paragraphs.forEach((p) => {
-                const pswpItems = p.querySelectorAll('a.pswp-item'); // 查找当前 <p> 中的 pswp-item 链接
-
-                // 如果当前 <p> 中包含 pswp-item 链接
+                const pswpItems = p.querySelectorAll('a.pswp-item');
                 if (pswpItems.length > 0) {
-                    // 创建一个新的 <div> 标签
                     const newDiv = document.createElement('div');
-                    newDiv.className = 'grid'; // 设置类名
-
-                    // 将 <p> 的子节点移动到 <div>
+                    newDiv.className = 'grid';
                     while (p.firstChild) {
                         newDiv.appendChild(p.firstChild);
                     }
-
-                    // 替换 <p> 为 <div>
                     p.replaceWith(newDiv);
                 }
             });
 
-            // 初始化 Masonry
-            const gallerygrid = document.querySelector('.grid');
-            if (!gallerygrid) return;
+            const galleries = document.querySelectorAll('.grid'); // 获取所有 .grid 容器
 
-            const images = gallerygrid.querySelectorAll('img');
-            const promises = Array.from(images).map((img) => {
-                return new Promise((resolve) => {
-                    if (img.complete) {
-                        resolve(); // 图片已经加载完成
-                    } else {
-                        img.onload = resolve; // 等待图片加载完成
-                        img.onerror = resolve; // 即使加载失败，也继续
-                    }
-                });
-            });
+            galleries.forEach((gallerygrid) => {
+                const gridImages = gallerygrid.querySelectorAll('img');
+                const imagePromises = Array.from(gridImages).map(waitForImageLoad);
 
-            function calculateColumnWidth() {
-                const screenWidth = window.innerWidth;
-
-                // 根据屏幕宽度动态设置列宽
-                if (screenWidth > 999) {
-                    return Math.floor(screenWidth / 3); // 屏幕宽度的 1/3
-                } else {
-                    return Math.floor(screenWidth / 2); // 屏幕宽度的一半
+                function calculateColumnWidth() {
+                    return window.innerWidth > 999 ? Math.floor(window.innerWidth / 3) : Math.floor(window.innerWidth / 2);
                 }
-            }
 
-            // 动态设置 .grid-item 的最大宽度
-            function updateGridItemStyles() {
-                const columnWidth = calculateColumnWidth();
-                const gridItems = document.querySelectorAll('.grid-item');
-                gridItems.forEach(item => {
-                    item.style.maxWidth = `${columnWidth}px`; // 限制每个网格项的最大宽度
+                function calculateAndUpdateGridStyles() {
+                    const columnWidth = calculateColumnWidth();
+                    const gridItems = gallerygrid.querySelectorAll('.grid-item'); // 当前容器的子项
+                    gridItems.forEach(item => item.style.maxWidth = `${columnWidth}px`);
+                    return columnWidth;
+                }
+
+                const columnWidth = calculateAndUpdateGridStyles();
+
+                Promise.all(imagePromises).then(() => {
+                    const masonry = new Masonry(gallerygrid, {
+                        itemSelector: '.grid-item',
+                        columnWidth: columnWidth,
+                        percentPosition: true,
+                        gutter: 10,
+                    });
+
+                    window.addEventListener('resize', () => {
+                        const newColumnWidth = calculateAndUpdateGridStyles();
+                        masonry.columnWidth = newColumnWidth;
+                        masonry.layout();
+                    });
                 });
-            }
-
-            updateGridItemStyles();
-
-            // 监听窗口大小变化，动态调整列宽和样式
-            window.addEventListener('resize', () => {
-                masonry.destroy(); // 销毁当前 Masonry 实例
-                masonry = new Masonry(gallerygrid, {
-                    itemSelector: '.grid-item',
-                    columnWidth: calculateColumnWidth(),
-                    percentPosition: true,
-                    gutter: 10,
-                });
-                updateGridItemStyles(); // 更新样式
-            });
-
-            // 等待所有图片加载完成后初始化 Masonry
-            Promise.all(promises).then(() => {
-                console.log('All images loaded, initializing Masonry...');
-                const masonry = new Masonry(gallerygrid, {
-                    itemSelector: '.grid-item', // 每个网格项
-                    columnWidth: calculateColumnWidth(), // 列宽
-                    percentPosition: true,
-                    gutter: 10, // 间距
-                });
-
-                masonry.layout(); // 强制重新布局
-                console.log(masonry);
             });
         });
     });
+
+    function waitForImageLoad(img) {
+        return new Promise((resolve) => {
+            if (img.complete) {
+                resolve();
+            } else {
+                img.onload = resolve;
+                img.onerror = resolve;
+            }
+        });
+    }
 </script>
 
 
