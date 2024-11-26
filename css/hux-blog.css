@@ -1618,6 +1618,9 @@ img::-moz-selection {
   height: auto;
   margin: 1.5em auto 1.6em auto;
 }
+.post-container .grid-item img {
+  margin: 4px 0 0 0;
+}
 /* Hux Optimize UserExperience */
 .navbar-default .navbar-toggle:focus,
 .navbar-default .navbar-toggle:hover {
@@ -1693,4 +1696,14 @@ img::-moz-selection {
 }
 .no-scroll {
   overflow-y: hidden;
+}
+
+.grid {
+  display: block;
+  position: relative;
+  width: 100%; /* 或者指定宽度 */
+}
+.grid-item {
+  float: left; /* 让子项排列 */
+  transition: all 0.3s ease;
 }
