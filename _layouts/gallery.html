@@ -133,7 +133,7 @@ layout: default
             const computedStyle = window.getComputedStyle(postContainer);
             const paddingLeft = parseFloat(computedStyle.paddingLeft);
             const paddingRight = parseFloat(computedStyle.paddingRight);
-            const contentWidth = postContainer.getBoundingClientRect().width - paddingLeft - paddingRight;
+            const contentWidth = postContainer.getBoundingClientRect().width - paddingLeft - paddingRight-10;
             return Math.floor(contentWidth / 2); // 返回一半宽度
         } else {
             console.warn('.post-container 元素未找到');
