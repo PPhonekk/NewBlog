@@ -123,7 +123,7 @@ layout: default
                 const imagePromises = Array.from(gridImages).map(waitForImageLoad);
 
                 function calculateColumnWidth() {
-                    return window.innerWidth > 992 ? 480 : Math.floor(window.innerWidth*5/6);
+                    return window.innerWidth > 992 ? 400 : Math.floor(window.innerWidth);
                 }
 
                 function calculateAndUpdateGridStyles() {
