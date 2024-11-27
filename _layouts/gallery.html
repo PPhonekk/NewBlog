@@ -130,7 +130,10 @@ layout: default
     if (window.innerWidth > 999) {
         if (postContainer) {
             // 获取 .post-container 的宽度
-            const containerWidth = postContainer.getBoundingClientRect().width;
+            const computedStyle = window.getComputedStyle(postContainer);
+            const paddingLeft = parseFloat(computedStyle.paddingLeft);
+            const paddingRight = parseFloat(computedStyle.paddingRight);
+            const contentWidth = postContainer.getBoundingClientRect().width - paddingLeft - paddingRight;
             return Math.floor(containerWidth / 2); // 返回一半宽度
         } else {
             console.warn('.post-container 元素未找到');
