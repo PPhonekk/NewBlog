@@ -123,8 +123,24 @@ layout: default
                 const imagePromises = Array.from(gridImages).map(waitForImageLoad);
 
                 function calculateColumnWidth() {
-                    return window.innerWidth > 992 ? Math.floor(window.innerWidth*2/3) : Math.floor(window.innerWidth);
-                }
+    // 获取 .post-container 容器
+    const postContainer = document.querySelector('.post-container');
+    
+    // 如果是宽屏模式
+    if (window.innerWidth > 999) {
+        if (postContainer) {
+            // 获取 .post-container 的宽度
+            const containerWidth = postContainer.getBoundingClientRect().width;
+            return Math.floor(containerWidth / 2); // 返回一半宽度
+        } else {
+            console.warn('.post-container 元素未找到');
+            return Math.floor(window.innerWidth * 2 / 3); // 作为备选
+        }
+    } else {
+        // 非宽屏时，返回全宽计算逻辑
+        return Math.floor(window.innerWidth);
+    }
+}
 
                 function calculateAndUpdateGridStyles() {
                     const columnWidth = calculateColumnWidth();
