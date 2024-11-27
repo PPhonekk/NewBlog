@@ -165,15 +165,24 @@ layout: default
             });
 
             function calculateColumnWidth() {
-                const screenWidth = window.innerWidth;
-
-                // 根据屏幕宽度动态设置列宽
-                if (screenWidth > 1200) {
-                    return Math.floor(screenWidth / 3); // 屏幕宽度的 1/3
-                } else {
-                    return Math.floor(screenWidth / 2); // 屏幕宽度的一半
-                }
-            }
+    // 获取 .post-container 容器
+    const postContainer = document.querySelector('.post-container');
+    
+    // 如果是宽屏模式
+    if (window.innerWidth > 999) {
+        if (postContainer) {
+            // 获取 .post-container 的宽度
+            const containerWidth = postContainer.getBoundingClientRect().width;
+            return Math.floor(containerWidth / 2); // 返回一半宽度
+        } else {
+            console.warn('.post-container 元素未找到');
+            return Math.floor(window.innerWidth * 2 / 3); // 作为备选
+        }
+    } else {
+        // 非宽屏时，返回全宽计算逻辑
+        return Math.floor(window.innerWidth);
+    }
+}
 
             // 动态设置 .grid-item 的最大宽度
             function updateGridItemStyles() {
